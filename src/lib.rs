@@ -98,13 +98,32 @@ impl<T: Kind> CastInto<T> for T {
 pub trait SpawnInstance {
     /// Spawns a new [`Entity`] which contains the given instance of `T` and returns an [`InstanceCommands<T>`] for it.
     fn spawn_instance<T: Component>(&mut self, instance: T) -> InstanceCommands<'_, T>;
+
+    /// Spawns a new [`Entity`] and returns an [`InstanceCommands<T>`] for it.
+    ///
+    /// # Safety
+    ///
+    /// This function assumes the given bundle produces an entity of kind T.
+    unsafe fn spawn_instance_unchecked<T: Kind>(
+        &mut self,
+        bundle: impl Bundle,
+    ) -> InstanceCommands<'_, T>;
 }
 
 impl SpawnInstance for Commands<'_, '_> {
     fn spawn_instance<T: Component>(&mut self, instance: T) -> InstanceCommands<'_, T> {
-        let entity = self.spawn(instance).id();
+        let entity = self.spawn(instance);
         // SAFE: `entity` is spawned as a valid instance of kind `T`.
-        unsafe { InstanceCommands::from_entity_unchecked(self.entity(entity)) }
+        unsafe { InstanceCommands::from_entity_unchecked(entity) }
+    }
+
+    unsafe fn spawn_instance_unchecked<T: Kind>(
+        &mut self,
+        bundle: impl Bundle,
+    ) -> InstanceCommands<'_, T> {
+        let entity = self.spawn(bundle);
+        // SAFE: In the User, we trust.
+        unsafe { InstanceCommands::from_entity_unchecked(entity) }
     }
 }
 
