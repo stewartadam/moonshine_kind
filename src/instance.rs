@@ -590,6 +590,36 @@ impl<T: Component> PartialEq for InstanceRef<'_, T> {
     }
 }
 
+impl<T: Component> PartialEq<Entity> for InstanceRef<'_, T> {
+    fn eq(&self, other: &Entity) -> bool {
+        self.0 == *other
+    }
+}
+
+impl<T: Component> PartialEq<InstanceRef<'_, T>> for Entity {
+    fn eq(&self, other: &InstanceRef<'_, T>) -> bool {
+        other == self
+    }
+}
+
+impl<T: Component, U: Component> PartialEq<Instance<U>> for InstanceRef<'_, T>
+where
+    U: CastInto<T>,
+{
+    fn eq(&self, other: &Instance<U>) -> bool {
+        *self.0 == *other
+    }
+}
+
+impl<T: Component, U: Component> PartialEq<InstanceRef<'_, U>> for Instance<T>
+where
+    U: CastInto<T>,
+{
+    fn eq(&self, other: &InstanceRef<'_, U>) -> bool {
+        *self == other.instance()
+    }
+}
+
 impl<T: Component> Eq for InstanceRef<'_, T> {}
 
 impl<T: Component> Deref for InstanceRef<'_, T> {
@@ -752,6 +782,36 @@ impl<T: Component> From<&InstanceMut<'_, T>> for Instance<T> {
 impl<T: Component> PartialEq for InstanceMut<'_, T> {
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
+    }
+}
+
+impl<T: Component> PartialEq<Entity> for InstanceMut<'_, T> {
+    fn eq(&self, other: &Entity) -> bool {
+        self.0 == *other
+    }
+}
+
+impl<T: Component> PartialEq<InstanceMut<'_, T>> for Entity {
+    fn eq(&self, other: &InstanceMut<'_, T>) -> bool {
+        other == self
+    }
+}
+
+impl<T: Component, U: Component> PartialEq<Instance<U>> for InstanceMut<'_, T>
+where
+    U: CastInto<T>,
+{
+    fn eq(&self, other: &Instance<U>) -> bool {
+        *self.0 == *other
+    }
+}
+
+impl<T: Component, U: Component> PartialEq<InstanceMut<'_, U>> for Instance<T>
+where
+    U: CastInto<T>,
+{
+    fn eq(&self, other: &InstanceMut<'_, U>) -> bool {
+        *self == other.instance()
     }
 }
 
