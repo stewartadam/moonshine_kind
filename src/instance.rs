@@ -1137,7 +1137,7 @@ fn test_impl_entity_event_from_instance() {
 
 // Experimental
 #[doc(hidden)]
-#[derive(Deref, DerefMut)]
+#[derive(Deref, DerefMut, Reflect)]
 pub struct InstanceVec<T: Kind>(Vec<Instance<T>>);
 
 impl<T: Kind> Default for InstanceVec<T> {
