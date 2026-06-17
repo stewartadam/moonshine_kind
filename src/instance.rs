@@ -1153,6 +1153,18 @@ impl<T: Kind> InstanceVec<T> {
     }
 }
 
+impl<T: Kind> MapEntities for InstanceVec<T> {
+    fn map_entities<M: EntityMapper>(&mut self, entity_mapper: &mut M) {
+        let olds: Vec<_> = self.0.drain(..).collect();
+        for old in olds {
+            let new_entity = entity_mapper.get_mapped(old.entity());
+            // SAFE: In Deserializer, we trust.
+            let new = unsafe { Instance::from_entity_unchecked(new_entity) };
+            self.0.push(new);
+        }
+    }
+}
+
 impl<T: Kind> RelationshipSourceCollection for InstanceVec<T> {
     type SourceIter<'a>
         = std::iter::Map<std::slice::Iter<'a, Instance<T>>, fn(&Instance<T>) -> Entity>
