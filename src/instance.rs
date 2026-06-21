@@ -18,7 +18,7 @@ use bevy_ecs::{
     component::{ComponentId, Components},
     entity::{EntityMapper, MapEntities},
     prelude::*,
-    query::{FilteredAccess, QueryData, ReadOnlyQueryData, WorldQuery},
+    query::{FilteredAccess, IterQueryData, QueryData, ReadOnlyQueryData, WorldQuery},
     storage::{Table, TableRow},
     system::EntityCommands,
     world::unsafe_world_cell::UnsafeWorldCell,
@@ -300,6 +300,8 @@ unsafe impl<T: Kind> WorldQuery for Instance<T> {
     }
 }
 
+unsafe impl<T: Kind> IterQueryData for Instance<T> {}
+
 unsafe impl<T: Kind> ReadOnlyQueryData for Instance<T> {}
 
 unsafe impl<T: Kind> QueryData for Instance<T> {
@@ -539,6 +541,8 @@ unsafe impl<T: Component> QueryData for InstanceRef<'_, T> {
         <(Instance<T>, &T) as QueryData>::iter_access(state)
     }
 }
+
+unsafe impl<T: Component> IterQueryData for InstanceRef<'_, T> {}
 
 unsafe impl<T: Component> ReadOnlyQueryData for InstanceRef<'_, T> {}
 
@@ -868,6 +872,14 @@ impl<T: Component> DetectChanges for InstanceMut<'_, T> {
 
     fn changed_by(&self) -> MaybeLocation {
         self.1.changed_by()
+    }
+
+    fn is_added_after(&self, other: Tick) -> bool {
+        self.1.is_added_after(other)
+    }
+
+    fn is_changed_after(&self, other: Tick) -> bool {
+        self.1.is_changed_after(other)
     }
 }
 

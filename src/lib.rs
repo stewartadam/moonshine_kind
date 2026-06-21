@@ -285,13 +285,15 @@ mod tests {
 
     #[test]
     fn kind_without() {
+        use bevy_ecs::resource::IsResource;
         #[derive(Component)]
         struct Foo;
 
         struct NotFoo;
 
         impl Kind for NotFoo {
-            type Filter = Without<Foo>;
+            // `IsResource` check is needed as of Bevy 0.19 to exclude engine entities
+            type Filter = (Without<Foo>, Without<IsResource>);
         }
 
         let mut world = World::new();
