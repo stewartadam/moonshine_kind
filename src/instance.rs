@@ -748,6 +748,8 @@ unsafe impl<'b, T: Component<Mutability = Mutable>> QueryData for InstanceMut<'b
     }
 }
 
+unsafe impl<'a, T: Component<Mutability = Mutable>> IterQueryData for InstanceMut<'a, T> {}
+
 impl<'a, T: Component<Mutability = Mutable>> InstanceMut<'a, T> {
     /// Creates a new [`InstanceMut<T>`] from an [`EntityWorldMut`] if it contains a given [`Component`] of type `T`.
     pub fn from_entity(entity: EntityMut<'a>) -> Option<Self> {
